@@ -1,0 +1,63 @@
+;
+; Complete the 'maximumSum' function below.
+;
+; The function is expected to return a LONG_INTEGER.
+; The function accepts following parameters:
+;  1. LONG_INTEGER_ARRAY a
+;  2. LONG_INTEGER m
+;
+
+(defn maximumSum [a m]
+  (loop [xs (seq a)
+         prefix 0
+         best 0
+         seen (sorted-set 0)]
+    (if (empty? xs)
+      best
+      (let [x (first xs)
+            new-prefix (mod (+ prefix x) m)
+            larger (first (subseq seen > new-prefix))
+            candidate (if larger
+                        (mod (+ (- new-prefix larger) m) m)
+                        new-prefix)]
+        (recur (rest xs)
+               new-prefix
+               (max best candidate)
+               (conj seen new-prefix))))))
+
+(def fptr (get (System/getenv) "OUTPUT_PATH"))
+
+(def q
+  (Integer/parseInt
+    (clojure.string/trim (read-line))))
+
+(doseq [q-itr (range q)]
+  (let [first-multiple-input
+        (clojure.string/split
+          (clojure.string/trimr (read-line))
+          #" ")
+
+        n (Integer/parseInt
+            (nth first-multiple-input 0))
+
+        m (Long/parseLong
+            (nth first-multiple-input 1))
+
+        a (vec
+            (map #(Long/parseLong %)
+                 (clojure.string/split
+                   (clojure.string/trimr (read-line))
+                   #" ")))
+
+        result (maximumSum a m)]
+
+    (spit fptr
+          (str result "\n")
+          :append true)))
+output:
+nput (stdin)
+1
+5 7
+3 3 9 9 5
+Expected Output
+6
